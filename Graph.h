@@ -554,12 +554,17 @@ class graph {
       // By convention, we set the predecessor to itself.
       report[src].pred = src;
       report[src].state = DISCOVERED;
+      //report[src].npaths = 1;
       q.push(src);
 
       while(!q.empty()) {
         // dequeue front node from queue
         u = q.front();
+        report[u].npaths++;
         q.pop();
+
+        int largest_dist = report[u].dist;
+        
 
         // examine outgoing edges of u
         for(edge &e : vertices[u].outgoing) {
@@ -568,11 +573,14 @@ class graph {
             report[v].dist = report[u].dist + 1;
             report[v].pred = u;
             report[v].state = DISCOVERED;
+            
             // enqueue newly discovered vertex
+          }// if 
+          if(report[v].dist > largest_dist)
             q.push(v);
-          }
-        }
-      }
+        }// for
+
+      }// while
       return true;
     }
 
@@ -776,9 +784,27 @@ class graph {
         return false;
 
       // your code here!
+      if(rpt[dest].pred == -1)
+        return false;
+        /*
+      int x = dest;
+      while(x >=1){
+        path.push_back(x);
+        x = rpt[x].pred;
+      }*/
+      _extract_path(rpt,dest,path);
       return true;  // placeholder
     }
-
+    private:
+    void _extract_path(const vector<vertex_label> & rpt, int dest,vector<int> & path){
+      if(rpt[dest].dist == 0){
+        path.push_back(dest);
+        return;
+      }
+      _extract_path(rpt, rpt[dest].pred ,path);
+      path.push_back(dest);        
+    }
+    public:
     /*
      *  TODO 30 points
      *
