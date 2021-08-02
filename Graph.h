@@ -835,10 +835,44 @@ class graph {
 
       if(has_cycle())
         return false;
-      // your code here...
+     
+      rpt.resize(vertices.size());
+      for(int i = 0; i < vertices.size(); i++)
+        rpt[i].dist = _dag_critical_paths(rpt, i, rpt[i].pred);
+
       return true;
     }
 
+    private:
+    double _dag_critical_paths(vector<vertex_label> & rpt, int index, int& pred_ID){
+      if(vertices[index].incoming.size() == 0){
+        
+        rpt[index].dist = 0.0;
+        rpt[index].pred = index;
+        rpt[index].state = DISCOVERED;
+        return 0;
+      }
+      
+      double heaviest = -1;
+      for(edge& e: vertices[index].incoming){
+        double iteration;
+        if(rpt[e.vertex_id].state != DISCOVERED )
+          iteration = e.weight + _dag_critical_paths(rpt, e.vertex_id, pred_ID);
+        else 
+          iteration =e.weight+ rpt[e.vertex_id].dist;
+
+        if(heaviest < iteration ){
+          heaviest = iteration;
+          pred_ID = e.vertex_id;
+        }
+      }//for
+      rpt[index].dist = heaviest;
+      rpt[index].pred = pred_ID;
+      rpt[index].state = DISCOVERED;
+      return heaviest;
+    }
+
+    public:
     /*
      *  TODO 30 points
      *  function:  dag_num_paths
