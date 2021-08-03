@@ -941,9 +941,71 @@ class graph {
       if(has_cycle())
         return false;
       // your code here...
+      
+      vector<vertex_label> starting;
+      vector<vertex_label> ending;
+
+      rpt.resize(vertices.size());
+      starting.resize(vertices.size());
+      ending.resize(vertices.size());
+
+      for(int i = 0; i < vertices.size(); i++){
+        ending[i].npaths = _npaths_ending_at(ending, i);
+        starting[i].npaths = _npaths_starting_at(starting,i);
+
+
+        rpt[i].npaths = ending[i].npaths * starting[i].npaths ;
+      }// for
+
       return true;
     }
+    
+    private:
 
+    int _npaths_ending_at(vector<vertex_label> & report, int end){
+      if(vertices[end].incoming.size() == 0){
+        report[end].state = DISCOVERED;
+        report[end].npaths = 1;
+        return 1;
+      }//if
+
+      int paths = 0;
+      for(edge& e: vertices[end].incoming){
+        
+        if(report[e.vertex_id].state == DISCOVERED)
+          paths += report[e.vertex_id].npaths ;
+        else
+          paths +=  _npaths_ending_at(report, e.vertex_id);
+      }//for
+
+      report[end].state = DISCOVERED;
+      report[end].npaths = paths;
+      return paths;
+    }//_npaths_ending_at
+
+    int _npaths_starting_at(vector<vertex_label> & report, int start){
+      if(vertices[start].outgoing.size() == 0){
+        report[start].state = DISCOVERED;
+        report[start].npaths = 1;
+        return 1;
+      }//if
+
+      int paths = 0;
+      for(edge& e: vertices[start].outgoing){
+        
+        if(report[e.vertex_id].state == DISCOVERED)
+          paths += report[e.vertex_id].npaths ;
+        else
+          paths += _npaths_starting_at(report, e.vertex_id);
+          
+      }//for
+
+      report[start].state = DISCOVERED;
+      report[start].npaths = paths;
+      return paths;
+    }//_npaths_starting_at
+
+    public:
     /*
      * TODO 20 points
      * function:  valid_topo_order
