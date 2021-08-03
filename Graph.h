@@ -1021,13 +1021,48 @@ class graph {
      *
      * RUNTIME:  O(V+E)
      */
+
     bool valid_topo_order(const vector<int> & order) {
       if(has_cycle())
         return false;
-      return true;
+      vector<vertex_label> report;
+      report.resize(order.size());
+      
+      for(int i = 0; i < order.size(); i++){
+        report[order[i]].state = DISCOVERED;
+        if(vertices[order[i]].incoming.size() == 0);
 
+        else{
+          if(!valid_incoming(report,order[i]))
+            return false;
+        }// else
+      }// for
+
+      return true;
+    }
+    private:
+    bool valid_incoming(vector<vertex_label> report, int index){
+      if(vertices[index].incoming.size() == 0){
+        if(report[index].state == DISCOVERED)
+          return true;
+        return false;
+      }
+
+      if(report[index].state != DISCOVERED)
+        return false;
+
+      for(edge &e: vertices[index].incoming){
+        if(report[e.vertex_id].state != DISCOVERED)
+          return false;
+        
+        if(!valid_incoming(report, e.vertex_id))
+          return false;  
+      }// for
+
+      return true;        
     }
 
+    public:
     /*
      * TODO 30 points
      *
