@@ -790,7 +790,12 @@ class graph {
     }
 
     private:
-    void _extract_path(const vector<vertex_label> & rpt, int dest,vector<int> & path){
+
+    // _extract_path
+    // Helper function for extract_path
+    // Recursively extracts the path ending at dest index and exports it to path vector.
+    //
+    void _extract_path(const vector<vertex_label> & rpt, int dest, vector<int> & path){
       if(rpt[dest].dist == 0){
         path.push_back(dest);
         return;
@@ -798,6 +803,7 @@ class graph {
       _extract_path(rpt, rpt[dest].pred ,path);
       path.push_back(dest);        
     }
+
     public:
     /*
      *  TODO 30 points
@@ -831,6 +837,7 @@ class graph {
         return false;
      
       rpt.resize(vertices.size());
+
       for(int i = 0; i < vertices.size(); i++)
         rpt[i].dist = _dag_critical_paths(rpt, i, rpt[i].pred);
 
@@ -838,9 +845,14 @@ class graph {
     }
 
     private:
+
+    // _dag_critical_paths
+    // Helper function for dag_critical_paths
+    // Recursively calculates the critical path of each vertex and sets its respective pred.
+    //
     double _dag_critical_paths(vector<vertex_label> & rpt, int index, int& pred_ID){
+
       if(vertices[index].incoming.size() == 0){
-        
         rpt[index].dist = 0.0;
         rpt[index].pred = index;
         rpt[index].state = DISCOVERED;
@@ -860,6 +872,7 @@ class graph {
           pred_ID = e.vertex_id;
         }
       }//for
+
       rpt[index].dist = heaviest;
       rpt[index].pred = pred_ID;
       rpt[index].state = DISCOVERED;
@@ -956,6 +969,11 @@ class graph {
     
     private:
 
+    // _npaths_ending_at & _npaths_starting_at
+    // helper functions for dag_num_paths.
+    // Recursively calculates the number of paths starting/ending at
+    //  a specified index and returns the result
+    //
     int _npaths_ending_at(vector<vertex_label> & report, int end){
       if(vertices[end].incoming.size() == 0){
         report[end].state = DISCOVERED;
@@ -1033,11 +1051,12 @@ class graph {
 
       return true;
     }
+
     private:
 
     // _valid_incoming
     // Helper function for valid_topo_order
-    // it recursivley checks the incoming vertices for
+    // it checks if the incoming vertices are Discovered or Not.
     //
     bool _valid_incoming(vector<vertex_label> report, int index){
 
