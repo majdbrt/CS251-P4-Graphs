@@ -1019,39 +1019,31 @@ class graph {
     bool valid_topo_order(const vector<int> & order) {
       if(has_cycle())
         return false;
+
       vector<vertex_label> report;
       report.resize(order.size());
       
       for(int i = 0; i < order.size(); i++){
-        report[order[i]].state = DISCOVERED;
-        if(vertices[order[i]].incoming.size() == 0);
 
-        else{
-          if(!_valid_incoming(report,order[i]))
-            return false;
-        }// else
+        if(!_valid_incoming(report,order[i]))
+          return false;
+        
+        report[order[i]].state = DISCOVERED;
       }// for
 
       return true;
     }
     private:
 
+    // _valid_incoming
+    // Helper function for valid_topo_order
+    // it recursivley checks the incoming vertices for
+    //
     bool _valid_incoming(vector<vertex_label> report, int index){
-      if(vertices[index].incoming.size() == 0){
-        if(report[index].state == DISCOVERED)
-          return true;
-        return false;
-      }
-
-      if(report[index].state != DISCOVERED)
-        return false;
 
       for(edge &e: vertices[index].incoming){
         if(report[e.vertex_id].state != DISCOVERED)
           return false;
-        
-        if(!_valid_incoming(report, e.vertex_id))
-          return false;  
       }// for
 
       return true;        
@@ -1131,7 +1123,11 @@ class graph {
     }
 
   private:
-  
+    // _enum_paths
+    // Helper function for enum_paths
+    // it recursivley add the elements of a path as a string
+    // and pushes it to the end of paths vector once it reaches a source
+    //
     void _enum_paths(int target, vector<string> &paths, string & path){
       if(vertices[target].incoming.size() == 0){
         paths.push_back(path);
@@ -1162,6 +1158,5 @@ class graph {
 
       return enum_paths(tgt, paths);
     }
-
 };
 
