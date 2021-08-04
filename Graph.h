@@ -565,7 +565,6 @@ class graph {
 
         int largest_dist = report[u].dist;
         
-
         // examine outgoing edges of u
         for(edge &e : vertices[u].outgoing) {
           v = e.vertex_id;
@@ -783,18 +782,13 @@ class graph {
       if(rpt.size() != num_nodes())
         return false;
 
-      // your code here!
       if(rpt[dest].pred == -1)
         return false;
-        /*
-      int x = dest;
-      while(x >=1){
-        path.push_back(x);
-        x = rpt[x].pred;
-      }*/
+      
       _extract_path(rpt,dest,path);
-      return true;  // placeholder
+      return true; 
     }
+
     private:
     void _extract_path(const vector<vertex_label> & rpt, int dest,vector<int> & path){
       if(rpt[dest].dist == 0){
@@ -1033,7 +1027,7 @@ class graph {
         if(vertices[order[i]].incoming.size() == 0);
 
         else{
-          if(!valid_incoming(report,order[i]))
+          if(!_valid_incoming(report,order[i]))
             return false;
         }// else
       }// for
@@ -1041,7 +1035,8 @@ class graph {
       return true;
     }
     private:
-    bool valid_incoming(vector<vertex_label> report, int index){
+
+    bool _valid_incoming(vector<vertex_label> report, int index){
       if(vertices[index].incoming.size() == 0){
         if(report[index].state == DISCOVERED)
           return true;
@@ -1055,7 +1050,7 @@ class graph {
         if(report[e.vertex_id].state != DISCOVERED)
           return false;
         
-        if(!valid_incoming(report, e.vertex_id))
+        if(!_valid_incoming(report, e.vertex_id))
           return false;  
       }// for
 
@@ -1129,11 +1124,27 @@ class graph {
       if(has_cycle() || target < 0 || target >= num_nodes())
         return false;
 
-      // your code here!
+      string path = id2name(target);
+      _enum_paths(target, paths, path);
+      
       return true;
     }
 
+  private:
+  
+    void _enum_paths(int target, vector<string> &paths, string & path){
+      if(vertices[target].incoming.size() == 0){
+        paths.push_back(path);
+        return;
+      }// if
 
+      for(edge &e: vertices[target].incoming){
+        string x =  id2name(e.vertex_id) +" " + path;
+        _enum_paths(e.vertex_id, paths, x);
+      }// for
+    }// _enum_paths
+  
+  public:
 
     /*
      * (DONE)
@@ -1151,9 +1162,6 @@ class graph {
 
       return enum_paths(tgt, paths);
     }
-    
-
-
 
 };
 
